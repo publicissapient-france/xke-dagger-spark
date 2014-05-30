@@ -6,6 +6,7 @@ import dagger.ObjectGraph;
 import fr.xebia.xke.dagger.controller.TodosController;
 import fr.xebia.xke.dagger.exception.BadRequestException;
 import fr.xebia.xke.dagger.exception.InternalServerErrorException;
+import fr.xebia.xke.dagger.exception.NotFoundException;
 import fr.xebia.xke.dagger.model.Todo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +46,15 @@ public class SparkServer {
             return toJson(savedTodo);
         });
 
+        delete("/todos/:id", (request, response) -> toJson( todosController.delete(request.params("id"))));
+
         exception(InternalServerErrorException.class, (e, request, response) -> response.status(500));
 
         exception(BadRequestException.class, (e, request, response) -> response.status(400));
+        exception(NotFoundException.class, (e, request, response) -> {
+            response.status(404);
+            response.body(e.getMessage());
+        });
 
         after((request, response) -> {
             response.header("Content-Type", "application/json");

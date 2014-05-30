@@ -32,4 +32,8 @@ public class TodosMongoRepository {
     public Todo findById(String id) {
         return todosMongoCollection.findOne(withOid(id)).as(Todo.class);
     }
+
+    public Todo deleteById(String id) {
+        return todosMongoCollection.findAndModify(withOid(id)).remove().as(Todo.class);
+    }
 }

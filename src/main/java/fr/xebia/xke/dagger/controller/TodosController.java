@@ -1,6 +1,7 @@
 package fr.xebia.xke.dagger.controller;
 
 
+import fr.xebia.xke.dagger.exception.NotFoundException;
 import fr.xebia.xke.dagger.model.Todo;
 import fr.xebia.xke.dagger.repository.TodosMongoRepository;
 
@@ -27,6 +28,14 @@ public class TodosController {
     }
 
     public Todo getById(String id) {
-        return todosMongoRepository.findById(id);
+        Todo todo = todosMongoRepository.findById(id);
+        if (todo == null){
+            throw new NotFoundException("Todo "+ id +" not found");
+        }
+        return todo;
+    }
+
+    public Todo delete(String id) {
+        return todosMongoRepository.deleteById(id);
     }
 }
