@@ -1,0 +1,43 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '1.11'
+  distributionUrl = 'http://services.gradle.org/distributions/gradle-1.11-all.zip'
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    provided
+    provided.extendsFrom(compile)
+}
+
+idea {
+
+    module {
+        //if you need to put 'provided' dependencies on the classpath
+        scopes.PROVIDED.plus += configurations.provided
+
+        downloadJavadoc = true
+
+        downloadSources = true
+    }
+}
+
+dependencies {
+    compile 'com.sparkjava:spark-core:2.+'
+    compile 'com.google.guava:guava:17.0'
+    compile 'org.jongo:jongo:1.0'
+    compile 'org.mongodb:mongo-java-driver:2.11.+'
+    compile 'com.squareup.dagger:dagger:1.2.1'
+    compile 'ch.qos.logback:logback-classic:1.1.2'
+    provided 'com.squareup.dagger:dagger-compiler:1.2.1'
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
