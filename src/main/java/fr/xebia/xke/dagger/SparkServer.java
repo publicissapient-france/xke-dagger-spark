@@ -34,6 +34,8 @@ public class SparkServer {
     private void launch() {
         logger.info("launching server");
 
+        staticFileLocation("/public");
+
         get("/todos", (request, response) -> toJson(todosController.getAll()));
 
         get("/todos/:id", (request, response) -> toJson(todosController.getById(request.params("id"))));

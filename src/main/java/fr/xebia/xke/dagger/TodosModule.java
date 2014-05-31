@@ -6,6 +6,8 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import dagger.Module;
 import dagger.Provides;
+import fr.xebia.xke.dagger.repository.TodosMongoRepository;
+import fr.xebia.xke.dagger.repository.TodosRepository;
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
 
@@ -17,9 +19,14 @@ import static com.mongodb.MongoCredential.createMongoCRCredential;
 import static java.lang.System.getProperty;
 
 @Module(
-        injects = SparkServer.class
+        injects = SparkServer.class,
+        includes = TodosInMemoryModule.class, library = true
 )
 public class TodosModule {
+
+    @Provides TodosRepository provideTodosRepository(TodosMongoRepository mongoRepository){
+        return mongoRepository;
+    }
 
     @Provides @Singleton ObjectMapper provideJacksonMapper() {
         return new ObjectMapper();

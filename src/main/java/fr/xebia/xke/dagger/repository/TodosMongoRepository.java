@@ -11,7 +11,7 @@ import java.util.Collection;
 import static org.jongo.Oid.withOid;
 
 @Singleton
-public class TodosMongoRepository {
+public class TodosMongoRepository implements TodosRepository {
 
     private final MongoCollection todosMongoCollection;
 
