@@ -34,8 +34,10 @@ public class SparkServer {
     }
 
 
-    void launch() {
+    void launch(int port) {
         logger.info("launching server");
+
+        setPort(port);
 
         staticFileLocation("/public");
 
@@ -46,11 +48,11 @@ public class SparkServer {
             return toJson(todoDtos);
         });
 
-        get("/todos/:id", (request, response) -> toJson(todosController.getById(request.params("id"))));
+        get("/todos/:id", (request, response) -> toJson(TodoDto.from(todosController.getById(request.params("id")))));
 
         put("/todos", (request, response) -> {
             TodoDto todoDto = parseTodoFromRequest(request);
-            Todo savedTodo = todosController.save(new Todo(todoDto.getId(), todoDto.getTitle(), todoDto.getDescription()));
+            Todo savedTodo = todosController.save(todoDto.to());
             if (savedTodo == null) {
                 throw new InternalServerErrorException("Error while saving");
             }
@@ -88,7 +90,7 @@ public class SparkServer {
 
     public static void main(String[] args) {
         ObjectGraph objectGraph = ObjectGraph.create(new TodosModule());
-        objectGraph.get(SparkServer.class).launch();
+        objectGraph.get(SparkServer.class).launch(4567);
     }
 
 }

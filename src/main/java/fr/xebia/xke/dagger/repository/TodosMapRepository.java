@@ -5,14 +5,21 @@ import fr.xebia.xke.dagger.model.Todo;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Singleton
 public class TodosMapRepository implements TodosRepository {
 
 
     private final Map<String, Todo> todos;
+
+    public TodosMapRepository(List<Todo> todos) {
+        this.todos= todos.stream().collect(Collectors.toMap(Todo::getId,  t -> t));
+    }
+
 
     @Inject
     public TodosMapRepository(Map<String, Todo> todos) {

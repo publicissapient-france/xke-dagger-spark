@@ -33,4 +33,8 @@ public class TodoDto {
     public static final TodoDto from(Todo todo) {
         return new TodoDto(todo.getId(), todo.getTitle(), todo.getDescription());
     }
+
+    public final Todo to() {
+        return new Todo(id, title, description);
+    }
 }
