@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jongo.marshall.jackson.oid.Id;
-import org.jongo.marshall.jackson.oid.ObjectId;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Todo {
@@ -17,12 +16,13 @@ public class Todo {
     private final String description;
 
     @JsonCreator
-    public Todo(@ObjectId @Id String _id, @JsonProperty("title") String title, @JsonProperty("description") String description) {
+    public Todo(@Id String _id, @JsonProperty("title") String title, @JsonProperty("description") String description) {
         this._id = _id;
         this.title = title;
         this.description = description;
     }
 
+    @Id
     public String getId() {
         return _id;
     }
