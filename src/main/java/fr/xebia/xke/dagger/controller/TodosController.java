@@ -15,8 +15,8 @@ public class TodosController {
     private TodosRepository todosRepository;
 
     @Inject
-    public TodosController(TodosRepository todosMongoRepository) {
-        this.todosRepository = todosMongoRepository;
+    public TodosController(TodosRepository todosRepository) {
+        this.todosRepository = todosRepository;
     }
 
     public Collection<Todo> getAll() {

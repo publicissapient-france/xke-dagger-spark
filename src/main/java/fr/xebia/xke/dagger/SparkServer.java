@@ -8,12 +8,15 @@ import fr.xebia.xke.dagger.exception.BadRequestException;
 import fr.xebia.xke.dagger.exception.InternalServerErrorException;
 import fr.xebia.xke.dagger.exception.NotFoundException;
 import fr.xebia.xke.dagger.model.Todo;
+import fr.xebia.xke.dagger.model.TodoDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static spark.Spark.*;
 
@@ -31,24 +34,30 @@ public class SparkServer {
     }
 
 
-    private void launch() {
+    void launch() {
         logger.info("launching server");
 
         staticFileLocation("/public");
 
-        get("/todos", (request, response) -> toJson(todosController.getAll()));
+        after((request, response) -> response.type("application/json"));
+
+        get("/todos", (request, response) -> {
+            List<TodoDto> todoDtos = todosController.getAll().stream().map(TodoDto::from).collect(Collectors.<TodoDto>toList());
+            return toJson(todoDtos);
+        });
 
         get("/todos/:id", (request, response) -> toJson(todosController.getById(request.params("id"))));
 
         put("/todos", (request, response) -> {
-            Todo savedTodo = todosController.save(parseTodoFromRequest(request));
+            TodoDto todoDto = parseTodoFromRequest(request);
+            Todo savedTodo = todosController.save(new Todo(todoDto.getId(), todoDto.getTitle(), todoDto.getDescription()));
             if (savedTodo == null) {
                 throw new InternalServerErrorException("Error while saving");
             }
-            return toJson(savedTodo);
+            return toJson(TodoDto.from(savedTodo));
         });
 
-        delete("/todos/:id", (request, response) -> toJson( todosController.delete(request.params("id"))));
+        delete("/todos/:id", (request, response) -> toJson(todosController.delete(request.params("id"))));
 
         exception(InternalServerErrorException.class, (e, request, response) -> response.status(500));
 
@@ -57,28 +66,24 @@ public class SparkServer {
             response.status(404);
             response.body(e.getMessage());
         });
-
-        after((request, response) -> {
-            response.header("Content-Type", "application/json");
-        });
     }
 
-    private String toJson(Object savedTodo) {
+    private String toJson(Object object) {
         try {
-            return objectMapper.writeValueAsString(savedTodo);
+            return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
             throw new InternalServerErrorException(e);
         }
     }
 
-    private Todo parseTodoFromRequest(Request request) {
-        Todo todo;
+    private TodoDto parseTodoFromRequest(Request request) {
+        TodoDto todoDto;
         try {
-            todo = objectMapper.readValue(request.body(), Todo.class);
+            todoDto = objectMapper.readValue(request.body(), TodoDto.class);
         } catch (IOException e) {
             throw new BadRequestException(e);
         }
-        return todo;
+        return todoDto;
     }
 
     public static void main(String[] args) {

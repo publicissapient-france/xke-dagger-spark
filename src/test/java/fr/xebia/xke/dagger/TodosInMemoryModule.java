@@ -30,10 +30,14 @@ import static java.util.Arrays.asList;
 /**
  * Created by slemesle on 31/05/2014.
  */
-@Module(library = true, overrides = true)
+@Module(
+        includes = TodosModule.class,
+        library = true, overrides = true
+)
 public class TodosInMemoryModule {
 
-    @Provides public Map<String, Todo> provideTodoMap(){
+    @Provides
+    public Map<String, Todo> provideTodoMap() {
         return asList(
                 new Todo("1234", "Titre 1", "lorem ipsum"),
                 new Todo("5432", "Titre 2", "lorem ipsum"),
@@ -42,7 +46,7 @@ public class TodosInMemoryModule {
     }
 
     @Provides
-    TodosRepository provideTodosRepository(TodosMapRepository mongoRepository){
+    TodosRepository provideTodosRepository(TodosMapRepository mongoRepository) {
         return mongoRepository;
     }
 

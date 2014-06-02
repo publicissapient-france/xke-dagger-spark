@@ -1,16 +1,12 @@
 package fr.xebia.xke.dagger.repository;
 
-import com.google.common.collect.Lists;
 import fr.xebia.xke.dagger.model.Todo;
-import org.jongo.MongoCollection;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
-
-import static org.jongo.Oid.withOid;
 
 @Singleton
 public class TodosMapRepository implements TodosRepository {
