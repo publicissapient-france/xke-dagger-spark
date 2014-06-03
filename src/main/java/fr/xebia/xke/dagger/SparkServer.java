@@ -12,6 +12,7 @@ import fr.xebia.xke.dagger.model.TodoDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
+import spark.ResponseTransformer;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -26,11 +27,13 @@ public class SparkServer {
 
     private final TodosController todosController;
     private final ObjectMapper objectMapper;
+    private final ResponseTransformer jsonTransformer;
 
     @Inject
     public SparkServer(TodosController todosController, ObjectMapper objectMapper) {
         this.todosController = todosController;
         this.objectMapper = objectMapper;
+        this.jsonTransformer = (ResponseTransformer) model -> toJson(model);
     }
 
 
@@ -43,12 +46,9 @@ public class SparkServer {
 
         after((request, response) -> response.type("application/json"));
 
-        get("/todos", (request, response) -> {
-            List<TodoDto> todoDtos = todosController.getAll().stream().map(TodoDto::from).collect(Collectors.<TodoDto>toList());
-            return toJson(todoDtos);
-        });
+        get("/todos", (request, response) -> todosController.getAll().stream().map(TodoDto::from).collect(Collectors.<TodoDto>toList()), jsonTransformer);
 
-        get("/todos/:id", (request, response) -> toJson(TodoDto.from(todosController.getById(request.params("id")))));
+        get("/todos/:id", (request, response) -> TodoDto.from(todosController.getById(request.params("id"))), jsonTransformer);
 
         put("/todos", (request, response) -> {
             TodoDto todoDto = parseTodoFromRequest(request);
@@ -56,10 +56,10 @@ public class SparkServer {
             if (savedTodo == null) {
                 throw new InternalServerErrorException("Error while saving");
             }
-            return toJson(TodoDto.from(savedTodo));
-        });
+            return TodoDto.from(savedTodo);
+        }, jsonTransformer);
 
-        delete("/todos/:id", (request, response) -> toJson(todosController.delete(request.params("id"))));
+        delete("/todos/:id", (request, response) -> TodoDto.from(todosController.delete(request.params("id"))), jsonTransformer);
 
         exception(InternalServerErrorException.class, (e, request, response) -> response.status(500));
 

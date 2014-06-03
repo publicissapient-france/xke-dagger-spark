@@ -1,6 +1,7 @@
 package fr.xebia.xke.dagger.repository;
 
 import com.google.common.collect.Lists;
+import dagger.Lazy;
 import fr.xebia.xke.dagger.model.Todo;
 import org.jongo.MongoCollection;
 
@@ -13,27 +14,31 @@ import static org.jongo.Oid.withOid;
 @Singleton
 public class TodosMongoRepository implements TodosRepository {
 
-    private final MongoCollection todosMongoCollection;
+    private final Lazy<MongoCollection> todosMongoCollection;
 
     @Inject
-    public TodosMongoRepository(MongoCollection todosMongoCollection) {
+    public TodosMongoRepository(Lazy<MongoCollection> todosMongoCollection) {
         this.todosMongoCollection = todosMongoCollection;
     }
 
     public Collection<Todo> getAll() {
-        return Lists.newArrayList(todosMongoCollection.find().as(Todo.class));
+        return Lists.newArrayList(collection().find().as(Todo.class));
     }
 
     public Todo save(Todo todo) {
-        todosMongoCollection.save(todo);
-        return todosMongoCollection.findOne(withOid(todo.getId())).as(Todo.class);
+        collection().save(todo);
+        return collection().findOne(withOid(todo.getId())).as(Todo.class);
+    }
+
+    private MongoCollection collection() {
+        return todosMongoCollection.get();
     }
 
     public Todo findById(String id) {
-        return todosMongoCollection.findOne(withOid(id)).as(Todo.class);
+        return collection().findOne(withOid(id)).as(Todo.class);
     }
 
     public Todo deleteById(String id) {
-        return todosMongoCollection.findAndModify(withOid(id)).remove().as(Todo.class);
+        return collection().findAndModify(withOid(id)).remove().as(Todo.class);
     }
 }
