@@ -112,5 +112,11 @@ public class TodosMapRepositoryTest {
         return new Todo(id, "", null);
     }
 
+   /* asList(
+            new Todo("1234", "Titre 1", "lorem ipsum"),
+    new Todo("5432", "Titre 2", "lorem ipsum"),
+    new Todo("08758", "Titre 3", "lorem ipsum")
+    ).stream().collect(Collectors.toMap(Todo::getId, todo -> todo))*/
+
 
 }

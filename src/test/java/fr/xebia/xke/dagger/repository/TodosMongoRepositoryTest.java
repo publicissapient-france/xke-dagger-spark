@@ -42,9 +42,9 @@ public class TodosMongoRepositoryTest {
         // Given
         Todo expectedTodo = newTodo("1234");
 
-        Find findMock = mock(Find.class);
-        when(findMock.as(Todo.class)).thenReturn(() -> Arrays.asList(expectedTodo).iterator());
-        when(mongoCollection.find(Oid.withOid(expectedTodo.getId()))).thenReturn(findMock);
+        FindOne findMock = mock(FindOne.class);
+        when(findMock.as(Todo.class)).thenReturn(expectedTodo);
+        when(mongoCollection.findOne(Oid.withOid(expectedTodo.getId()))).thenReturn(findMock);
 
         // When
         Todo todo =  todosMongoRepository.findById("1234");

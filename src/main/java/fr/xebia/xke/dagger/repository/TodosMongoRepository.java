@@ -5,18 +5,14 @@ import dagger.Lazy;
 import fr.xebia.xke.dagger.model.Todo;
 import org.jongo.MongoCollection;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Collection;
 
 import static org.jongo.Oid.withOid;
 
-@Singleton
 public class TodosMongoRepository implements TodosRepository {
 
     private final Lazy<MongoCollection> todosMongoCollection;
 
-    @Inject
     public TodosMongoRepository(Lazy<MongoCollection> todosMongoCollection) {
         this.todosMongoCollection = todosMongoCollection;
     }
